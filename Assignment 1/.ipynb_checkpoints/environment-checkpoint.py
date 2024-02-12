@@ -1,7 +1,8 @@
 import numpy as np
 
 class GridWorld:
-    def __init__(self, start_state=0, end_state=23, gamma=0.9 shape=(5, 5), obstacles=[11, 17], water=[21]):
+    def __init__(self, start_state=0, end_state=23, gamma=0.9, shape=(5, 5), obstacles=[11, 17], water=[21]):
+        self.action = None
         self.start_state = start_state
         self.end_state = end_state
         self.shape = shape
@@ -11,43 +12,53 @@ class GridWorld:
         self.reward = 0
         self.prob_stay = 0.1
         self.prob_rleft = 0.05
-        self.prob.rright = 0.05
-    
-    def next_state(self, state, action):
+        self.prob_rright = 0.05
+ 
+    def next_action(self, policy):
+        prob = np.random.uniform()
+        for i in range(len(policy[self.state])):
+            if(prob < policy[self.state][i]):
+                return i
+            else:
+                prob -= policy[self.state][i]
+            
+    def next_state(self):
         prob = np.random.uniform()
         if(prob < 0.05):
-            action = (action + 3)%4
+            self.action = (self.action + 3)%4
         elif(prob < 0.1):
-            action = (action + 1)%4
+            self.action = (self.action + 1)%4
         elif(prob < 0.2):
-            action = None
-        new_state = state
-        if(action == None):
+            self.action = None
+        new_state = self.state
+        if(self.action == None):
             return new_state
         
-        if(action == 0):
+        if(self.action == 0):
             new_state -= 5
-        else if(action == 1):
+        elif(self.action == 1):
             new_state += 1
-        else if(action == 2):
+        elif(self.action == 2):
             new_state += 5
         else:
             new_state -= 1
-        if(new_state < 0 or new_state > end_state or new_state in obstacles):
+        if(new_state < 0 or new_state > self.end_state or new_state in self.obstacles):
             new_state = state
-        
         return new_state
     
-    def get_reward(self, state):
-        reward = 0
-        if(state in water):
-            reward = -10
-        elif(state == end_state):
-            reward = 10
-        return reward
+    def get_reward(self):
+        new_reward = 0
+        if(self.state in self.water):
+            new_reward = -10
+        elif(self.state == self.end_state):
+            new_reward = 10
+        return self.reward
     
-    def take_step(self, action):
-        new_state = next_state(self.state, action)
-        self.state = new_state
-        reward = get_reward(new_state)
-        return self.state, reward
+    def take_step(self, policy):
+        self.action = next_action(policy)
+        self.state = next_state(self.state, self.action)
+        self.reward = get_reward()
+        return self.state, self.reward
+    
+    def is_end_state(self):
+        return (self.state == self.end_state)
