@@ -1,7 +1,7 @@
 import numpy as np
 
 class GridWorld:
-    def __init__(self, start_state=0, end_state=23, gamma=0.9, shape=(5, 5), obstacles=[11, 17], water=[21]):
+    def __init__(self, start_state=0, end_state=24, gamma=0.9, shape=(5, 5), obstacles=[11, 17], water=[21]):
         self.action = None
         self.start_state = start_state
         self.end_state = end_state
@@ -15,13 +15,8 @@ class GridWorld:
         self.prob_rright = 0.05
  
     def next_action(self, policy):
-        prob = np.random.uniform()
-        for i in range(len(policy[self.state])):
-            if(prob < policy[self.state][i]):
-                return i
-            else:
-                prob -= policy[self.state][i]
-            
+        return np.random.choice([0, 1, 2, 3], p=policy[self.state])
+
     def next_state(self):
         prob = np.random.uniform()
         if(prob < 0.05):
@@ -37,11 +32,13 @@ class GridWorld:
         if(self.action == 0):
             new_state -= 5
         elif(self.action == 1):
-            new_state += 1
+            if(new_state%5 != 4):
+                new_state += 1
         elif(self.action == 2):
             new_state += 5
         else:
-            new_state -= 1
+            if(new_state%5 != 0):
+                new_state -= 1
         if(new_state < 0 or new_state > self.end_state or new_state in self.obstacles):
             new_state = self.state
         return new_state
@@ -52,6 +49,7 @@ class GridWorld:
             new_reward = -10
         elif(self.state == self.end_state):
             new_reward = 10
+          
         return new_reward
     
     def take_step(self, policy):
