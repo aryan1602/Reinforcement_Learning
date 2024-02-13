@@ -43,7 +43,7 @@ class GridWorld:
         else:
             new_state -= 1
         if(new_state < 0 or new_state > self.end_state or new_state in self.obstacles):
-            new_state = state
+            new_state = self.state
         return new_state
     
     def get_reward(self):
@@ -52,13 +52,17 @@ class GridWorld:
             new_reward = -10
         elif(self.state == self.end_state):
             new_reward = 10
-        return self.reward
+        return new_reward
     
     def take_step(self, policy):
-        self.action = next_action(policy)
-        self.state = next_state(self.state, self.action)
-        self.reward = get_reward()
+        self.action = self.next_action(policy)
+        self.state = self.next_state()
+        self.reward = self.get_reward()
         return self.state, self.reward
     
     def is_end_state(self):
-        return (self.state == self.end_state)
+        if self.state == self.end_state:
+            return True
+        else:
+            return False
+

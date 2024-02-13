@@ -66,4 +66,3 @@ class GridWorld:
         else:
             return False
 
-print("HEllO WORLD")
